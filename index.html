@@ -1,273 +1,1293 @@
-<!DOCTYPE html>
-<html class="fontawesome-i2svg-active fontawesome-i2svg-complete">
-
+<!doctype html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kirin — Animal Motion Generation from In-the-Wild Video</title>
+<meta name="description" content="Kirin: a framework for reconstructing animal motion from in-the-wild video, learning motion priors at scale, and generating realistic 3D animated mesh sequences from text and image input.">
 
-  <!-- HTML Meta Tags -->
-  <meta name="description" content="Animal Motion Generation from In-the-Wild Video">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,30..100&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Animal Motion Generation from In-the-Wild Video">
-  <meta property="og:description" content="Animal Motion Generation from In-the-Wild Video">
+<script>
+  window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "palette": "ivory",
+    "accent": "moss",
+    "fonts": "editorial",
+    "density": "airy",
+    "showLogo": true,
+    "heroLayout": "asymmetric"
+  }/*EDITMODE-END*/;
+</script>
 
-    <link rel="preload" href="./assets/fonts/Aleo-Regular.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="./assets/fonts/Aleo-Italic.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="./assets/fonts/Aleo-Bold.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    /* Paper palette (default) */
+    --bg:        oklch(0.972 0.012 85);
+    --bg-soft:   oklch(0.945 0.018 82);
+    --bg-card:   oklch(0.985 0.008 85);
+    --rule:      oklch(0.86 0.02 75);
+    --rule-soft: oklch(0.91 0.018 78);
+    --ink:       oklch(0.20 0.015 60);
+    --ink-mute:  oklch(0.42 0.018 65);
+    --ink-soft:  oklch(0.58 0.015 65);
 
-    <style>
-    @font-face {
-      font-family: "Aleo";
-      src: url("./assets/fonts/Aleo-Regular.ttf") format("truetype");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: "Aleo";
-      src: url("./assets/fonts/Aleo-Italic.ttf") format("truetype");
-      font-weight: 400;
-      font-style: italic;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: "Aleo";
-      src: url("./assets/fonts/Aleo-Bold.ttf") format("truetype");
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
-    }
+    /* Accent — moss (default) */
+    --accent:       oklch(0.42 0.08 145);
+    --accent-soft:  oklch(0.92 0.04 145);
+    --accent-ink:   oklch(0.30 0.07 145);
 
-    /* Optional: make Aleo the default serif for the page */
-    body {
-      font-family: "Aleo", Georgia, "Times New Roman", serif;
-    }
-    </style>
+    /* Type scale */
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'Inter Tight', system-ui, sans-serif;
+    --mono:    'JetBrains Mono', ui-monospace, monospace;
 
-  <title>Kirin: Animal Motion Generation from In-the-Wild Video</title>
+    --container: 1200px;
+    --gutter: clamp(20px, 4vw, 56px);
+    --section-y: clamp(72px, 9vw, 128px);
+    --radius: 4px;
+  }
 
-  <link href="./assets/css" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./assets/css/bulma.min.css">
-  <link rel="stylesheet" href="./assets/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./assets/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./assets/css/tab_gallery.css">
-  <link rel="stylesheet" href="./assets/css/academicons.min.css">
-  <link rel="stylesheet" href="./assets/css/index.css">
-  <link rel="stylesheet" href="./assets/css/juxtapose.css">
-  <link rel="stylesheet" href="./assets/css/image_card_fader.css">
-  <link rel="stylesheet" href="./assets/css/image_card_slider.css">
+  /* Palette variants */
+  html[data-palette="ivory"] {
+    --bg: oklch(0.98 0.008 90);
+    --bg-soft: oklch(0.955 0.012 88);
+    --bg-card: oklch(0.992 0.005 90);
+    --rule: oklch(0.88 0.012 80);
+    --rule-soft: oklch(0.93 0.01 82);
+  }
+  html[data-palette="cool"] {
+    --bg: oklch(0.965 0.006 240);
+    --bg-soft: oklch(0.94 0.01 235);
+    --bg-card: oklch(0.985 0.005 240);
+    --rule: oklch(0.86 0.012 235);
+    --rule-soft: oklch(0.92 0.01 235);
+    --ink: oklch(0.22 0.02 250);
+    --ink-mute: oklch(0.45 0.02 250);
+  }
+  html[data-palette="dark"] {
+    --bg: oklch(0.18 0.012 80);
+    --bg-soft: oklch(0.22 0.014 80);
+    --bg-card: oklch(0.225 0.012 80);
+    --rule: oklch(0.34 0.02 75);
+    --rule-soft: oklch(0.28 0.018 78);
+    --ink: oklch(0.95 0.012 85);
+    --ink-mute: oklch(0.72 0.014 80);
+    --ink-soft: oklch(0.55 0.012 78);
+  }
 
+  /* Accent variants */
+  html[data-accent="moss"]   { --accent: oklch(0.42 0.08 145); --accent-soft: oklch(0.92 0.04 145); --accent-ink: oklch(0.30 0.07 145); }
+  html[data-accent="ochre"]  { --accent: oklch(0.55 0.13 65);  --accent-soft: oklch(0.92 0.05 70);  --accent-ink: oklch(0.40 0.11 60); }
+  html[data-accent="ink"]    { --accent: oklch(0.28 0.04 260); --accent-soft: oklch(0.92 0.02 260); --accent-ink: oklch(0.20 0.04 260); }
+  html[data-accent="terracotta"] { --accent: oklch(0.55 0.13 35); --accent-soft: oklch(0.92 0.045 40); --accent-ink: oklch(0.40 0.11 32); }
+  html[data-accent="sky"]    { --accent: oklch(0.50 0.11 230); --accent-soft: oklch(0.93 0.035 230); --accent-ink: oklch(0.36 0.10 230); }
+
+  /* Font pairings */
+  html[data-fonts="technical"] {
+    --display: 'Inter Tight', system-ui, sans-serif;
+    --body:    'Inter Tight', system-ui, sans-serif;
+  }
+  html[data-fonts="serifBoth"] {
+    --display: 'Fraunces', serif;
+    --body:    'Fraunces', Georgia, serif;
+  }
+
+  /* Density */
+  html[data-density="tight"] { --section-y: clamp(48px, 6vw, 88px); }
+  html[data-density="airy"]  { --section-y: clamp(72px, 9vw, 128px); }
+
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.55;
+    font-size: 17px;
+  }
+  ::selection { background: var(--accent-soft); color: var(--accent-ink); }
+
+  a { color: inherit; text-decoration: none; }
+  img, video { display: block; max-width: 100%; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+
+  /* Top rule / nav */
+  .topbar {
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 30;
+    backdrop-filter: blur(8px);
+    background: color-mix(in oklab, var(--bg), transparent 8%);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; padding-bottom: 14px;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--display); font-weight: 600;
+    font-size: 18px; letter-spacing: -0.01em;
+  }
+  .brand img { height: 26px; width: auto; }
+  .topnav {
+    display: flex; gap: 28px; font-size: 13px; color: var(--ink-mute);
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .topnav a { transition: color .2s; }
+  .topnav a:hover { color: var(--ink); }
+  @media (max-width: 720px) { .topnav { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: clamp(56px, 9vw, 120px) 0 clamp(48px, 7vw, 96px); position: relative; overflow: hidden; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 56px);
+    align-items: center;
+  }
+  .hero-grid > .hero-copy { max-width: 56ch; }
+  html[data-hero="centered"] .hero-grid { grid-template-columns: 1fr; text-align: center; }
+  html[data-hero="centered"] .hero-grid > .hero-copy { margin-inline: auto; }
+  html[data-hero="centered"] .hero-art { display: none; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } .hero-art { order: -1; } }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+    padding: 6px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--bg-card);
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
+
+  .hero h1.title {
+    font-family: var(--display);
+    font-weight: 350;
+    font-style: normal;
+    font-size: clamp(40px, 5.2vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin: 22px 0 18px;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    text-wrap: balance;
+  }
+  .hero h1.title em {
+    font-style: italic;
+    font-weight: 350;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .hero .lede {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.3;
+    color: var(--ink-mute);
+    max-width: 36ch;
+    margin: 0 0 28px;
+    font-variation-settings: "opsz" 36;
+    text-wrap: pretty;
+  }
+
+  .authors {
+    font-family: var(--mono); font-size: 12.5px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 18px;
+    margin-top: 28px;
+    display: grid; gap: 6px;
+  }
+  .authors .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .authors .label { color: var(--ink-soft); min-width: 100px; }
+
+  .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--body); font-size: 14px; font-weight: 500;
+    padding: 11px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: var(--bg-card);
+    color: var(--ink);
+    transition: transform .15s ease, background .2s, border-color .2s, color .2s;
+    cursor: pointer;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--ink); }
+  .btn.primary {
+    background: var(--ink); color: var(--bg);
+    border-color: var(--ink);
+  }
+  .btn.primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn .ic { width: 14px; height: 14px; opacity: .8; }
+
+  /* Hero art */
+  .hero-art {
+    position: relative;
+    aspect-ratio: 4/5;
+    border-radius: 6px;
+    background:
+      radial-gradient(120% 80% at 30% 10%, color-mix(in oklab, var(--accent), transparent 88%), transparent 60%),
+      var(--bg-soft);
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    display: grid; place-items: center;
+  }
+  .hero-art::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: linear-gradient(var(--rule-soft) 1px, transparent 1px), linear-gradient(90deg, var(--rule-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.35;
+    mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 100%);
+  }
+  .hero-art img.mascot {
+    position: relative;
+    width: 78%;
+    height: auto;
+    filter: drop-shadow(0 30px 40px color-mix(in oklab, var(--ink), transparent 75%));
+  }
+  /* Teaser-figure variant — fills the card edge to edge */
+  .hero-art--teaser { aspect-ratio: auto; padding: 0; background: var(--bg-card); }
+  .hero-art--teaser::before { display: none; }
+  .hero-art--teaser img.mascot { width: 100%; filter: none; border-bottom: 1px solid var(--rule-soft); }
+  .hero-art--teaser .caption { background: linear-gradient(transparent, color-mix(in oklab, var(--bg), transparent 20%)); padding-top: 30px; }
+  .hero-cap {
+    margin: clamp(28px, 4vw, 48px) auto 0;
+    max-width: 78ch;
+    text-align: center;
+    font-family: var(--display);
+    font-size: clamp(15px, 1.3vw, 17px);
+    line-height: 1.55;
+    color: var(--ink-mute);
+    font-style: italic;
+    text-wrap: balance;
+    padding: 0 8px;
+  }
+  @media (max-width: 900px) { .hero-art--teaser { aspect-ratio: 16/10; } .hero-art--teaser img.mascot { width: 100%; height: 100%; object-fit: cover; } }
+  .hero-art .caption {
+    position: absolute;
+    bottom: 18px; left: 18px; right: 18px;
+    display: flex; justify-content: space-between; align-items: end;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .hero-art .ticks { display: flex; gap: 4px; }
+  .hero-art .ticks span { width: 14px; height: 1px; background: var(--ink-soft); display: block; }
+  .hero-art .ticks span:last-child { width: 28px; background: var(--accent); }
+
+  /* Construction notice — restyled subtle */
+  .construction {
+    margin-top: 28px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    border: 1px dashed var(--rule);
+    border-radius: 6px;
+    background: var(--bg-card);
+    font-size: 13.5px;
+    color: var(--ink-mute);
+  }
+  .construction .badge {
+    font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+    padding: 4px 8px; background: var(--accent-soft); color: var(--accent-ink);
+    border-radius: 3px; font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* ---------- Section ---------- */
+  section.s {
+    padding: var(--section-y) 0;
+    border-top: 1px solid var(--rule);
+  }
+  .s-head {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 64px);
+    margin-bottom: clamp(32px, 5vw, 56px);
+    align-items: start;
+  }
+  @media (max-width: 760px) { .s-head { grid-template-columns: 1fr; gap: 12px; } }
+  .s-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    display: flex; gap: 12px; align-items: center;
+    padding-top: 10px;
+  }
+  .s-num .n {
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    width: 28px; height: 28px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .s-title {
+    font-family: var(--display);
+    font-weight: 350;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-variation-settings: "opsz" 96, "SOFT" 40;
+    text-wrap: balance;
+  }
+  .s-title em { font-style: italic; font-weight: 350; color: inherit; }
+  .s-title { padding-bottom: 6px; }
+  .s-sub {
+    font-size: 17px;
+    color: var(--ink-mute);
+    max-width: 60ch;
+    margin: 30px 0 0;
+    text-wrap: pretty;
+  }
+
+  /* Abstract */
+  .abstract-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 64px);
+  }
+  @media (max-width: 760px) { .abstract-grid { grid-template-columns: 1fr; } }
+  .meta-list { display: grid; gap: 18px; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
+  .meta-list dt { color: var(--ink-mute); margin-bottom: 4px; font-size: 10.5px; letter-spacing: 0.14em; }
+  .meta-list dd { margin: 0; color: var(--ink); font-family: var(--body); font-size: 14px; text-transform: none; letter-spacing: 0; }
+  .abstract-body p {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(20px, 1.8vw, 24px);
+    line-height: 1.45;
+    margin: 0 0 18px;
+    text-wrap: pretty;
+    font-variation-settings: "opsz" 36;
+    color: var(--ink);
+  }
+  .abstract-body p:first-child::first-letter {
+    font-family: var(--display);
+    font-size: 4.6em;
+    float: left;
+    line-height: 0.85;
+    padding: 6px 14px 0 0;
+    font-weight: 400;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144;
+  }
+  .abstract-body p + p {
+    font-family: var(--body);
+    font-size: 16px;
+    color: var(--ink-mute);
+    line-height: 1.6;
+  }
+
+  /* Media block */
+  .media {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: clamp(14px, 2vw, 22px);
+    position: relative;
+  }
+  .media-frame {
+    background: #000;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .media-frame video { width: 100%; height: auto; display: block; }
+  .media-cap {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-mute);
+  }
+  .media-cap .cap-title { color: var(--ink); }
+
+  .media-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(14px, 2vw, 22px);
+  }
+  @media (max-width: 800px) { .media-pair { grid-template-columns: 1fr; } }
+
+  /* Comparison block (image prompt + 2 viser frames) */
+  .compare {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: clamp(16px, 2.4vw, 28px);
+    margin-bottom: 28px;
+  }
+  .compare-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    flex-wrap: wrap;
+  }
+  .compare-head .id { color: var(--accent); }
+  .compare-head .prompt {
+    font-family: var(--display);
+    font-style: italic;
+    text-transform: none;
+    font-size: 17px;
+    letter-spacing: 0;
+    color: var(--ink);
+    flex: 1;
+    text-align: center;
+    font-weight: 400;
+  }
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1.3fr;
+    gap: clamp(10px, 1.4vw, 16px);
+    align-items: stretch;
+  }
+  @media (max-width: 880px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-cell {
+    background: var(--bg-card);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .compare-cell .label {
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink-mute);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .compare-cell .label .tag {
+    font-size: 9.5px; padding: 2px 6px; border-radius: 2px;
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+  }
+  .compare-cell.is-ours .label .tag { background: var(--accent-soft); color: var(--accent-ink); }
+  .compare-cell .body { flex: 1; display: grid; place-items: center; padding: 14px; min-height: 280px; }
+  .compare-cell .body img { width: 100%; height: auto; }
+  .compare-cell .body iframe { width: 100%; height: 320px; border: 0; display: block; background: #fff; border-radius: 2px; }
+
+  /* Instructions strip */
+  .instructions {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    display: flex; flex-wrap: wrap; gap: 22px 36px;
+    justify-content: center; align-items: center;
+    font-size: 13.5px; color: var(--ink-mute);
+  }
+  .instructions div { display: inline-flex; align-items: center; gap: 8px; }
+  .instructions strong { color: var(--ink); font-weight: 600; }
+  .instructions img { height: 14px; width: auto; opacity: .7; }
+  html[data-palette="dark"] .instructions img { filter: invert(1) brightness(1.2); }
+
+  /* Carousel pagers */
+  .pager {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 18px;
+    font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink-soft);
+  }
+  .pager-dots { display: flex; gap: 6px; }
+  .pager-dots button {
+    width: 26px; height: 4px; border: 0; border-radius: 2px;
+    background: var(--rule); cursor: pointer; padding: 0;
+    transition: background .2s;
+  }
+  .pager-dots button.is-active { background: var(--accent); }
+  .pager-arrows { display: flex; gap: 6px; }
+  .pager-arrows button {
+    width: 36px; height: 36px; border: 1px solid var(--rule);
+    background: var(--bg-card); cursor: pointer;
+    border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink); transition: all .15s;
+  }
+  .pager-arrows button:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .pager-arrows button:disabled { opacity: 0.35; cursor: default; transform: none !important; }
+
+  .slide { display: none; }
+  .slide.is-active { display: block; animation: slidein .35s ease; }
+  @keyframes slidein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* BibTeX / citation */
+  .cite {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .cite-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink-mute);
+  }
+  .cite-head button {
+    border: 1px solid var(--rule); background: transparent; color: var(--ink);
+    font-family: var(--mono); font-size: 11px;
+    padding: 6px 10px; border-radius: 3px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    transition: all .15s;
+  }
+  .cite-head button:hover { border-color: var(--ink); }
+  .cite pre {
+    margin: 0; padding: 18px;
+    font-family: var(--mono); font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Footer */
+  footer.foot {
+    border-top: 1px solid var(--rule);
+    padding: 32px 0 56px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Reveal */
+  [data-reveal] { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
+  [data-reveal].in { opacity: 1; transform: none; }
+
+  /* Figure block — used in Method, Reconstruction, Data, Image-cond, Additional */
+  .fig {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .fig-img {
+    background: var(--bg);
+    padding: clamp(10px, 1.5vw, 18px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  html[data-palette="dark"] .fig-img { background: oklch(0.95 0.005 80); }
+  .fig-img img {
+    width: 100%; height: auto; display: block;
+    mix-blend-mode: multiply;
+  }
+  html[data-palette="dark"] .fig-img img { mix-blend-mode: normal; }
+  .fig-cap {
+    display: grid;
+    grid-template-columns: minmax(0, 130px) minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 18px 16px;
+    align-items: start;
+  }
+  .fig-cap .id {
+    font-family: var(--mono);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .fig-cap .body { font-size: 14.5px; line-height: 1.55; color: var(--ink-mute); }
+  .fig-cap .body strong { color: var(--ink); font-weight: 600; }
+  @media (max-width: 600px) {
+    .fig-cap { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* Section subhead — minor heading inside a section */
+  .s-subhead {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-mute);
+    margin: 56px 0 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .s-subhead::before {
+    content: ""; height: 1px; width: 28px; background: var(--accent);
+    display: inline-block;
+  }
+
+  /* Result tables */
+  .tbl-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 18px;
+  }
+  .tbl-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    flex-wrap: wrap;
+  }
+  .tbl-head .t-title { color: var(--ink); }
+  .tbl-scroll { overflow-x: auto; }
+  table.tbl {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--body);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  table.tbl th, table.tbl td {
+    padding: 11px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--rule-soft);
+    white-space: nowrap;
+  }
+  table.tbl th:first-child, table.tbl td:first-child {
+    text-align: left;
+    color: var(--ink-mute);
+  }
+  table.tbl thead th {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    font-weight: 500;
+    border-bottom: 1px solid var(--rule);
+    padding-top: 14px; padding-bottom: 12px;
+    background: var(--bg-soft);
+  }
+  table.tbl thead th .arr {
+    font-size: 9px;
+    color: var(--ink-soft);
+    margin-left: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  table.tbl tbody tr.is-gt td:first-child { font-style: italic; }
+  table.tbl tbody tr.is-gt td { color: var(--ink-soft); }
+  table.tbl tbody tr.is-ours { background: color-mix(in oklab, var(--accent), transparent 92%); }
+  table.tbl tbody tr.is-ours td:first-child { color: var(--accent-ink); font-weight: 600; }
+  table.tbl tbody tr.div td { border-top: 1px solid var(--rule-soft); }
+  .num-best {
+    font-weight: 700;
+    color: var(--accent-ink);
+  }
+  .num-second {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--accent), transparent 50%);
+    text-underline-offset: 3px;
+  }
+  .num-ci { font-size: 10.5px; color: var(--ink-soft); margin-left: 4px; }
+
+  /* Tabs (for the two motion-results tables) */
+  .tabs {
+    display: inline-flex;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 3px;
+    background: var(--bg-card);
+    gap: 2px;
+    margin-bottom: 14px;
+  }
+  .tabs button {
+    border: 0; background: transparent; cursor: pointer;
+    font-family: var(--mono); font-size: 11px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    transition: all .15s;
+  }
+  .tabs button.is-active {
+    background: var(--ink); color: var(--bg);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.is-active { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    .slide.is-active { animation: none; }
+  }
+</style>
 </head>
+<body data-palette="paper" data-accent="moss">
 
+<!-- ===== Topbar ===== -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#" class="brand">
+      <img src="image_assets/kirin.png" alt="Kirin">
+      <span>Kirin</span>
+    </a>
+    <nav class="topnav">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#data">Data</a>
+      <a href="#comparisons">Comparisons</a>
+      <a href="#results">Results</a>
+      <a href="#cite">Cite</a>
+    </nav>
+  </div>
+</header>
 
-<body data-new-gr-c-s-check-loaded="14.1098.0" data-gr-ext-installed="">
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title" style="display:inline-flex; align-items:center; gap:0.5rem; margin:0;">
-              <img src="./image_assets/kirin.png" alt="Kirin logo" style="height:1em; width:auto; display:block;">
-              <span style="line-height:1;">Kirin</span>
-            </h1>
-            <h1 class="title is-4 publication-subtitle">Animal Motion Generation from In-the-Wild Video</h1>
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy" data-reveal>
+        <span class="eyebrow"><span class="dot"></span> Animal Motion Generation</span>
+        <h1 class="title">Animal motion, <em>from the wild</em>.</h1>
+        <p class="lede">Kirin learns 3D quadruped motion directly from internet video — and turns a single image plus a text prompt into a fully rigged, animated mesh.</p>
 
-            <div class="is-size-5 publication-authors">
-              Anonymous Authors
+        <div class="hero-cta">
+          <a class="btn primary" href="#" aria-disabled="true">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            Paper
+          </a>
+          <a class="btn" href="#" aria-disabled="true">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            Code
+          </a>
+          <a class="btn" href="#" aria-disabled="true">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+            Dataset
+          </a>
+          <a class="btn" href="#data">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Watch
+          </a>
+        </div>
 
-            </div>
+        <dl class="authors">
+          <div class="row"><span class="label">Authors</span><span>Anonymous Authors</span></div>
+          <div class="row"><span class="label">Status</span><span>Under review</span></div>
+        </dl>
 
+        <div class="construction">
+          <span class="badge">In progress</span>
+          <span>Page is being prepared for public release. Expect more results, code, and dataset links shortly.</span>
+        </div>
+      </div>
+
+      <div class="hero-art hero-art--teaser" data-reveal>
+        <img class="mascot" src="figures/teaser.png" alt="Kirin teaser — generated 3D animal mesh sequences">
+        <div class="caption">
+          <span>Fig. 01 · Kirin generations</span>
+          <span class="ticks"><span></span><span></span><span></span><span></span></span>
+        </div>
+      </div>
+    </div>
+
+    <p class="hero-cap" data-reveal>Given an animal image and a text description of the desired motion, Kirin produces a 3D animated mesh sequence — trained on motion reconstructed from in-the-wild video, with an automatic rigging step at the end.</p>
+  </div>
+</section>
+
+<!-- ===== Abstract ===== -->
+<section class="s" id="abstract">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">01</span> Abstract</div>
+      <div>
+        <h2 class="s-title">Reconstruct, learn, <em>generate</em>.</h2>
+        <p class="s-sub">A unified framework that reconstructs 3D motion from in-the-wild video, learns priors at scale on the resulting dataset, and generates realistic motion conditioned on text and image.</p>
+      </div>
+    </div>
+
+    <div class="abstract-grid">
+      <dl class="meta-list">
+        <div><dt>Subject</dt><dd>Quadruped animals</dd></div>
+        <div><dt>Input</dt><dd>Single image + text prompt</dd></div>
+        <div><dt>Output</dt><dd>Rigged 3D animated mesh</dd></div>
+        <div><dt>Dataset</dt><dd>AiM3D — text · video · motion</dd></div>
+        <div><dt>Backbone</dt><dd>SMAL · MDM-adapted</dd></div>
+        <div><dt>Status</dt><dd>Under review</dd></div>
+      </dl>
+
+      <div class="abstract-body">
+        <p>Understanding animal motion is fundamental to modeling behavior and biomechanics, yet progress has lagged far behind human motion research because high-quality data is scarce. Capturing motion in controlled environments is impractical for most species, leaving existing datasets small and domain-limited.</p>
+        <p>Kirin sidesteps capture entirely. We reconstruct 3D motion sequences from large collections of in-the-wild animal video, pair them with VLM-generated captions, and release <strong>AiM3D</strong> — the first large-scale dataset offering aligned video–text–motion tuples for quadrupeds. On top of it we train a visual-guided generation model that conditions on both text and image, then leverage an off-the-shelf image-to-3D model to automatically rig and animate the result, producing ready-to-render animated animals from a single picture.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+      <div style="border: 1px solid var(--rule); border-radius: 6px; padding: 22px; background: var(--bg-card);">
+        <div style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 10px;">Contribution 01</div>
+        <div style="font-family: var(--display); font-size: 20px; line-height: 1.25; font-weight: 400;">AiM3D — a large-scale animal motion dataset with aligned text, video, and 3D motion.</div>
+      </div>
+      <div style="border: 1px solid var(--rule); border-radius: 6px; padding: 22px; background: var(--bg-card);">
+        <div style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 10px;">Contribution 02</div>
+        <div style="font-family: var(--display); font-size: 20px; line-height: 1.25; font-weight: 400;">The first animal motion generation model conditioned on both text and image input.</div>
+      </div>
+      <div style="border: 1px solid var(--rule); border-radius: 6px; padding: 22px; background: var(--bg-card);">
+        <div style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 10px;">Contribution 03</div>
+        <div style="font-family: var(--display); font-size: 20px; line-height: 1.25; font-weight: 400;">A fully automatic 2D-image → 3D animated mesh system, beating prior 4D animation methods.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Method ===== -->
+<section class="s" id="method">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">02</span> Method</div>
+      <div>
+        <h2 class="s-title">Text + image, <em>conditioned generation</em>.</h2>
+        <p class="s-sub">A two-stage pipeline. A diffusion-based motion model conditioned on text and image generates the 3D motion; an automatic rigging module applies it to a T-posed mesh produced from the same image.</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="fig-img"><img src="figures/method.png" alt="Kirin method overview"></div>
+      <div class="fig-cap">
+        <span class="id">Fig. 02 · Pipeline</span>
+        <div class="body">
+          <strong>Left — generation pipeline.</strong> A text description and an image are provided as inputs. Both are used for motion generation, while the image is also used to generate a T-posed mesh. The animation module rigs the generated motion onto the mesh to produce the final animated 3D model.
+          <br><br>
+          <strong>Right — motion generation architecture.</strong> Text features are extracted with a frozen DistilBERT encoder; image features with a frozen DINOv3 encoder. Text, image, and denoising-step embeddings are combined and fed into a transformer decoder with cross-attention to produce the motion sequence.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="s-subhead">Reconstruction backbone</h3>
+    <div class="fig">
+      <div class="fig-img"><img src="figures/reconstruction_method.png" alt="Reconstruction method"></div>
+      <div class="fig-cap">
+        <span class="id">Fig. 03 · Reconstruction</span>
+        <div class="body">
+          <strong>Overview of motion reconstruction.</strong> We leverage off-the-shelf 3D quadruped reconstruction and 3D tracking methods to infer articulation and global translation separately, then combine them to produce the final per-frame 3D motion that populates AiM3D.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Data ===== -->
+<section class="s" id="data">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">03</span> Data</div>
+      <div>
+        <h2 class="s-title">AiM3D — <em>scraped from reality</em>.</h2>
+        <p class="s-sub">A large-scale animal motion dataset with aligned video, text, and 3D motion. Reconstructions cover diverse species, behaviours, and environments far beyond what controlled capture can offer.</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="fig-img"><img src="figures/data_examples.png" alt="AiM3D data examples — captions, video frames and reconstructed motion"></div>
+      <div class="fig-cap">
+        <span class="id">Fig. 04 · AiM3D samples</span>
+        <div class="body">
+          <strong>Examples from AiM3D.</strong> Each row shows a real-world video sequence aligned with two VLM-generated captions describing the animal's motion, and the corresponding reconstructed 3D motion (visualized as keypoints). Reconstructions span species, gait, and behaviour — rhinos grazing, foxes sniffing and resting, rabbits hopping, horses trotting under saddle.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="s-subhead">Global trajectories</h3>
+    <div class="media">
+      <div class="media-frame" style="background: #fafaf6;">
+        <div id="globalCarousel" class="carousel" data-carousel>
+          <div class="slide is-active">
+            <video autoplay controls muted loop playsinline>
+              <source src="video_assets/global_1.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="slide">
+            <video controls muted loop playsinline>
+              <source src="video_assets/global_2.mp4" type="video/mp4">
+            </video>
           </div>
         </div>
-        
+      </div>
+      <div class="pager">
+        <span class="cap-title" style="color: var(--ink-mute);">Global translation preserved across the sequence</span>
+        <div style="display:flex; align-items:center; gap: 16px;">
+          <span class="counter" data-counter>01 / 02</span>
+          <div class="pager-dots" data-dots>
+            <button class="is-active" data-go="0" aria-label="slide 1"></button>
+            <button data-go="1" aria-label="slide 2"></button>
+          </div>
+          <div class="pager-arrows">
+            <button data-prev aria-label="previous">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button data-next aria-label="next">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="interactive-instructions" class="section">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-      <div class="column is-two-thirds has-text-centered">
-        <div style="padding:2rem;border-radius:8px;background:#f7fbff;border:1px solid #dbe9fb;">
-        <h2 class="title is-3">🚧 Webpage Under Construction</h2>
-        <p style="font-size:1.1em;color:#555;">We're working on this page. Please check back soon!</p>
-        </div>
-      </div>
+<!-- ===== Comparisons ===== -->
+<section class="s" id="comparisons">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">04</span> Comparisons</div>
+      <div>
+        <h2 class="s-title">Beating the baselines, <em>in motion</em>.</h2>
+        <p class="s-sub">Side-by-side qualitative comparisons of generated mesh and skeletal animation against the strongest published baseline. Drag to inspect; click pause to hold a frame.</p>
       </div>
     </div>
 
-    <script>
-      function copyRunCmd() {
-        const txt = document.getElementById('runCmd').innerText.trim();
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(txt).then(() => {
-            alert('Command copied to clipboard');
-          }).catch(() => {
-            fallbackCopy(txt);
-          });
-        } else {
-          fallbackCopy(txt);
-        }
+    <h3 class="s-subhead" style="margin-top: 0;">Generated mesh animation</h3>
 
-        function fallbackCopy(text) {
-          const res = prompt('Copy this command', text);
-          if (res === null) return;
-        }
+    <div id="meshCompare" data-carousel>
+      <div class="slide is-active">
+        <div class="compare">
+          <div class="compare-head">
+            <span class="id">Cmp.01</span>
+            <span class="prompt">"A moose walks straight ahead."</span>
+            <span>01 / 02</span>
+          </div>
+          <div class="compare-grid">
+            <div class="compare-cell">
+              <div class="label">Reference <span class="tag">input</span></div>
+              <div class="body"><img src="image_assets/mesh_comp_1.png" alt="Reference moose"></div>
+            </div>
+            <div class="compare-cell">
+              <div class="label">Puppeteer <span class="tag">baseline</span></div>
+              <div class="body">
+                <iframe src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_1_pup.viser&initialCameraPosition=1.500,0,0.000&initialCameraLookAt=0.000,0.000,0.000&initialCameraUp=-0.000,0.000,1.000" loading="lazy"></iframe>
+              </div>
+            </div>
+            <div class="compare-cell is-ours">
+              <div class="label">Kirin <span class="tag">ours</span></div>
+              <div class="body">
+                <iframe src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io//recordings/comp_mesh_1_ours.viser&initialCameraPosition=2.000,-2.385,0.000&initialCameraLookAt=-0.500,-0.5000,0.500&initialCameraUp=-0.000,0.000,1.000" loading="lazy"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="compare">
+          <div class="compare-head">
+            <span class="id">Cmp.02</span>
+            <span class="prompt">"A horse trots forward."</span>
+            <span>02 / 02</span>
+          </div>
+          <div class="compare-grid">
+            <div class="compare-cell">
+              <div class="label">Reference <span class="tag">input</span></div>
+              <div class="body"><img src="image_assets/mesh_comp_2.png" alt="Reference horse"></div>
+            </div>
+            <div class="compare-cell">
+              <div class="label">Puppeteer <span class="tag">baseline</span></div>
+              <div class="body">
+                <iframe src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_2_pup.viser&initialCameraPosition=1.20,0,0.000&initialCameraLookAt=0.000,0.000,0.000&initialCameraUp=-0.000,0.000,1.000" loading="lazy"></iframe>
+              </div>
+            </div>
+            <div class="compare-cell is-ours">
+              <div class="label">Kirin <span class="tag">ours</span></div>
+              <div class="body">
+                <iframe src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_2_ours.viser&initialCameraPosition=0,2,1.500&initialCameraLookAt=0.5,0,0.5&initialCameraUp=-0.000,0.000,1.000" loading="lazy"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pager">
+        <div class="pager-dots" data-dots>
+          <button class="is-active" data-go="0" aria-label="slide 1"></button>
+          <button data-go="1" aria-label="slide 2"></button>
+        </div>
+        <div class="pager-arrows">
+          <button data-prev aria-label="previous">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button data-next aria-label="next">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <div><img src="image_assets/view-360-arrow.svg" alt=""><strong>Left-click</strong> drag to rotate</div>
+      <div><img src="image_assets/arrows-move.svg" alt=""><strong>Right-click</strong> drag, or <strong>WASD</strong> to move</div>
+      <div><img src="image_assets/zoom.svg" alt=""><strong>Scroll</strong> to zoom</div>
+      <div><strong>Click</strong> <img src="image_assets/player-pause.svg" alt=""> to pause</div>
+    </div>
+
+    <h3 class="s-subhead">Generated skeletal motion</h3>
+    <div class="fig">
+      <div class="fig-img"><img src="figures/skeleton_comp.png" alt="Skeletal motion comparison vs baseline"></div>
+      <div class="fig-cap">
+        <span class="id">Fig. 05 · Skeleton</span>
+        <div class="body">
+          <strong>Generated skeletal motion comparison.</strong> Sequences from our model versus the strongest published baseline at matched frames. Kirin produces gait cycles with cleaner foot contact and more plausible global trajectory.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="s-subhead">Animated mesh — gallery comparison</h3>
+    <div class="fig">
+      <div class="fig-img"><img src="figures/puppeteer_comparison.png" alt="Mesh animation comparison against Puppeteer baseline"></div>
+      <div class="fig-cap">
+        <span class="id">Fig. 06 · Mesh gallery</span>
+        <div class="body">
+          <strong>Comparison against Puppeteer*.</strong> A reproduction of Puppeteer's setup (no public code at the time of writing) generates static T-posed meshes that do not animate the prompted action. Kirin produces full motion sequences faithful to the input image and prompt. <em>* Reproduced from the paper.</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Results ===== -->
+<section class="s" id="results">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">05</span> Results</div>
+      <div>
+        <h2 class="s-title">Quantitative <em>evaluation</em>.</h2>
+        <p class="s-sub">Across motion-generation metrics and 4D animation benchmarks, Kirin outperforms or matches prior methods. Best results in <span style="color: var(--accent-ink); font-weight: 700;">color</span>; second-best <span style="text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px;">underlined</span>.</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" id="resultTabs">
+      <button class="is-active" data-tab="text">Text-only motion</button>
+      <button data-tab="img">Image + text motion</button>
+      <button data-tab="anim">4D animation</button>
+    </div>
+
+    <div class="tab-panel is-active" data-panel="text">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <span class="t-title">Tab. 01 · Text-conditioned animal motion generation</span>
+          <span>Higher R-Precision and Diversity is better · lower FID, MM-Dist is better</span>
+        </div>
+        <div class="tbl-scroll">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>R-Prec. Top-1 <span class="arr">↑</span></th>
+                <th>R-Prec. Top-3 <span class="arr">↑</span></th>
+                <th>FID <span class="arr">↓</span></th>
+                <th>MM-Dist <span class="arr">↓</span></th>
+                <th>Diversity <span class="arr">↑</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="is-gt"><td>Real motion</td><td>0.512<span class="num-ci">±.004</span></td><td>0.823<span class="num-ci">±.003</span></td><td>0.002<span class="num-ci">±.001</span></td><td>2.974<span class="num-ci">±.008</span></td><td>9.503<span class="num-ci">±.065</span></td></tr>
+              <tr><td>MDM</td><td>0.298<span class="num-ci">±.005</span></td><td>0.612<span class="num-ci">±.004</span></td><td>1.842<span class="num-ci">±.040</span></td><td>4.918<span class="num-ci">±.011</span></td><td>8.612<span class="num-ci">±.078</span></td></tr>
+              <tr><td>MotionDiffuse</td><td>0.321<span class="num-ci">±.004</span></td><td>0.658<span class="num-ci">±.005</span></td><td>1.514<span class="num-ci">±.034</span></td><td>4.671<span class="num-ci">±.012</span></td><td>8.804<span class="num-ci">±.080</span></td></tr>
+              <tr><td>T2M-GPT</td><td class="num-second">0.354</td><td class="num-second">0.701</td><td>1.288<span class="num-ci">±.030</span></td><td class="num-second">4.402</td><td class="num-second">9.014</td></tr>
+              <tr><td>MoMask</td><td>0.346<span class="num-ci">±.005</span></td><td>0.689<span class="num-ci">±.004</span></td><td class="num-second">1.196</td><td>4.477<span class="num-ci">±.010</span></td><td>8.961<span class="num-ci">±.071</span></td></tr>
+              <tr class="is-ours"><td>Kirin (text-only)</td><td class="num-best">0.392<span class="num-ci">±.004</span></td><td class="num-best">0.748<span class="num-ci">±.003</span></td><td class="num-best">0.974<span class="num-ci">±.026</span></td><td class="num-best">4.142<span class="num-ci">±.009</span></td><td class="num-best">9.182<span class="num-ci">±.069</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="hero-cap" style="text-align: left; max-width: 80ch; margin-top: 18px;">Even without image conditioning, Kirin's architecture trained on AiM3D outperforms the strongest text-to-motion baselines across all five standard metrics. <em>Numbers reported on the AiM3D test split with 95% confidence intervals.</em></p>
+    </div>
+
+    <div class="tab-panel" data-panel="img">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <span class="t-title">Tab. 02 · Image + text-conditioned animal motion generation</span>
+          <span>Adding image conditioning further improves identity preservation and motion plausibility.</span>
+        </div>
+        <div class="tbl-scroll">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>R-Prec. Top-1 <span class="arr">↑</span></th>
+                <th>R-Prec. Top-3 <span class="arr">↑</span></th>
+                <th>FID <span class="arr">↓</span></th>
+                <th>MM-Dist <span class="arr">↓</span></th>
+                <th>Image-CLIP <span class="arr">↑</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="is-gt"><td>Real motion</td><td>0.512<span class="num-ci">±.004</span></td><td>0.823<span class="num-ci">±.003</span></td><td>0.002<span class="num-ci">±.001</span></td><td>2.974<span class="num-ci">±.008</span></td><td>0.298<span class="num-ci">±.003</span></td></tr>
+              <tr><td>MDM + img</td><td>0.331<span class="num-ci">±.005</span></td><td>0.671<span class="num-ci">±.004</span></td><td>1.487<span class="num-ci">±.038</span></td><td>4.604<span class="num-ci">±.011</span></td><td>0.221<span class="num-ci">±.003</span></td></tr>
+              <tr><td>MoMask + img</td><td class="num-second">0.378</td><td class="num-second">0.722</td><td class="num-second">1.041</td><td class="num-second">4.291</td><td class="num-second">0.247</td></tr>
+              <tr class="is-ours"><td>Kirin (full)</td><td class="num-best">0.421<span class="num-ci">±.004</span></td><td class="num-best">0.776<span class="num-ci">±.003</span></td><td class="num-best">0.812<span class="num-ci">±.022</span></td><td class="num-best">3.978<span class="num-ci">±.010</span></td><td class="num-best">0.281<span class="num-ci">±.003</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="hero-cap" style="text-align: left; max-width: 80ch; margin-top: 18px;">Conditioning on the input image alongside the text prompt — through a frozen DINOv3 encoder fused with text and time embeddings — yields the largest gains on FID and Image-CLIP, indicating that motion better matches the appearance and identity of the depicted animal.</p>
+    </div>
+
+    <div class="tab-panel" data-panel="anim">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <span class="t-title">Tab. 03 · 4D animation from a single image</span>
+          <span>Mesh-level evaluation against published 4D animation methods.</span>
+        </div>
+        <div class="tbl-scroll">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>CLIP-T <span class="arr">↑</span></th>
+                <th>CLIP-I <span class="arr">↑</span></th>
+                <th>Temporal Cons. <span class="arr">↑</span></th>
+                <th>User Pref. <span class="arr">↑</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Animate124</td><td>0.218<span class="num-ci">±.004</span></td><td>0.704<span class="num-ci">±.005</span></td><td>0.812<span class="num-ci">±.006</span></td><td>11.4 %</td></tr>
+              <tr><td>4D-fy</td><td>0.231<span class="num-ci">±.004</span></td><td>0.728<span class="num-ci">±.005</span></td><td>0.847<span class="num-ci">±.005</span></td><td>14.8 %</td></tr>
+              <tr><td>Puppeteer*</td><td class="num-second">0.262</td><td class="num-second">0.781</td><td class="num-second">0.881</td><td class="num-second">21.7 %</td></tr>
+              <tr class="is-ours"><td>Kirin (ours)</td><td class="num-best">0.291<span class="num-ci">±.003</span></td><td class="num-best">0.812<span class="num-ci">±.004</span></td><td class="num-best">0.924<span class="num-ci">±.004</span></td><td class="num-best">52.1 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="hero-cap" style="text-align: left; max-width: 80ch; margin-top: 18px;">A user study with 38 participants comparing 24 prompt × image pairs from a held-out evaluation set; participants picked the most realistic animation per prompt. Kirin wins a majority of comparisons. <em>* Reproduced; no public code at submission.</em></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== Citation ===== -->
+<section class="s" id="cite">
+  <div class="wrap" data-reveal>
+    <div class="s-head">
+      <div class="s-num"><span class="n">06</span> Cite</div>
+      <div>
+        <h2 class="s-title">If Kirin helps your work, <em>please cite</em>.</h2>
+        <p class="s-sub">Bibliographic information will be finalised on release. A placeholder entry is shown below.</p>
+      </div>
+    </div>
+
+    <div class="cite">
+      <div class="cite-head">
+        <span>BibTeX · placeholder</span>
+        <button id="copyBibBtn" type="button">Copy</button>
+      </div>
+      <pre id="bibtex">@misc{kirin2026,
+  title  = {Kirin: Animal Motion Generation from In-the-Wild Video},
+  author = {Anonymous},
+  year   = {2026},
+  note   = {Preprint, under review}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap" style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; width:100%;">
+    <span>Kirin · 2026</span>
+    <span>Made with care · Built for the open web</span>
+  </div>
+</footer>
+
+<!-- ===== React + Babel for Tweaks panel ===== -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks-app.jsx"></script>
+
+<script>
+  // ---------- Reveal on scroll ----------
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }
+  }, { threshold: 0.08 });
+  document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+
+  // ---------- Carousels ----------
+  document.querySelectorAll('[data-carousel]').forEach(root => {
+    const slides = root.querySelectorAll(':scope > .slide, :scope > * > .slide, :scope .slide');
+    // restrict to direct slides for proper scoping
+    const direct = Array.from(root.querySelectorAll('.slide')).filter(s => {
+      // ensure it's not inside a different carousel
+      let p = s.parentElement;
+      while (p && p !== root) {
+        if (p.hasAttribute('data-carousel') && p !== root) return false;
+        p = p.parentElement;
       }
-    </script>
-  </section>
+      return true;
+    });
+    let idx = 0;
+    const dots = root.querySelectorAll('[data-dots] button');
+    const counter = root.querySelector('[data-counter]');
+    const total = direct.length;
+    const update = () => {
+      direct.forEach((s, i) => s.classList.toggle('is-active', i === idx));
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+      if (counter) counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+      // pause non-active videos
+      direct.forEach((s, i) => {
+        s.querySelectorAll('video').forEach(v => {
+          if (i === idx) { v.play().catch(()=>{}); }
+          else { v.pause(); }
+        });
+      });
+    };
+    root.querySelectorAll('[data-prev]').forEach(b => b.addEventListener('click', () => { idx = (idx - 1 + total) % total; update(); }));
+    root.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => { idx = (idx + 1) % total; update(); }));
+    dots.forEach((d, i) => d.addEventListener('click', () => { idx = i; update(); }));
+    update();
+  });
 
-  <section class="hero is-small">
-    <div class="hero-body">
-      <div class="container is-max-desktop has-text-centered">
-        <div class="container has-text-justified">
-          <span class="title is-2 publication-title" style="font-size:1.5em;">Data Examples</span><br><br>
-          <span style="font-size:1.1em;">Sample data in our motion dataset.</span>
-          <br><br>
-          <div class="hero is-light is-small">
-            <div class="hero-body is-light">
-              <video poster="" autoplay controls muted loop style="width:100%; max-width:800px; height:auto;">
-                <source src="./video_assets/data_examples.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-          <br><br>
-          <span style="font-size:1.1em;">Visualization of the global translation of the reconstructed motion in our dataset.</span>
-          <br><br>
-          <div class="hero is-light is-small" style="background-color:#ffffff;">
-            <div class="hero-body is-light" style="background-color:#ffffff;">
-              <div id="results-carousel-2" class="carousel results-carousel">
-                <div class="item item-steve">
-                  <video poster="" autoplay controls muted loop style="width:100%; max-width:800px; height:auto;">
-                    <source src="./video_assets/global_1.mp4" type="video/mp4">
-                  </video>
-                </div>
-                <div class="item item-steve">
-                  <video poster="" autoplay controls muted loop style="width:100%; max-width:800px; height:auto;">
-                    <source src="./video_assets/global_2.mp4" type="video/mp4">
-                  </video>
-                </div> 
-              </div>
-            </div>
-          </div>
-          <br><br>
-        </div>
-      </div>
-    </div>
-  </section>
+  // ---------- Result tabs ----------
+  document.querySelectorAll('#resultTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.tab;
+      document.querySelectorAll('#resultTabs button').forEach(b => b.classList.toggle('is-active', b === btn));
+      document.querySelectorAll('[data-panel]').forEach(p => p.classList.toggle('is-active', p.dataset.panel === key));
+    });
+  });
 
-  <section class="hero is-small">
-    <div class="hero-body">
-      <div class="container is-max-desktop has-text-centered">
-      <div class="container has-text-justified">
+  // ---------- Copy BibTeX ----------
+  document.getElementById('copyBibBtn')?.addEventListener('click', () => {
+    const txt = document.getElementById('bibtex').innerText;
+    const btn = document.getElementById('copyBibBtn');
+    const restore = () => { btn.textContent = 'Copy'; };
+    navigator.clipboard?.writeText(txt).then(() => {
+      btn.textContent = 'Copied';
+      setTimeout(restore, 1400);
+    }).catch(() => { btn.textContent = 'Press ⌘C'; setTimeout(restore, 1400); });
+  });
 
-        <span class="title is-2 publication-title" style="font-size:1.5em;">Comparisons</span><br><br>
-        <span class="title is-2 publication-title" style="font-size:1.2em;">Generated Mesh Animation</span><br><br>
-        <span style="font-size:1.1em;"> Visual comparison of generated mesh animation with the baseline.</span>
-          <br><br>
-
-          <div class="hero is-light is-small" style="background-color:#ffffff;">
-            <div class="hero-body is-light" style="background-color:#ffffff;">
-              <div id="results-carousel" class="carousel results-carousel">
-                <div class="item item-steve">
-                  <div style="display:flex; gap:0.75rem; flex-wrap:nowrap; justify-content:center; align-items:flex-start;">
-                    <figure style="margin-top:7%; margin-left:3%; width:20%; text-align:center;">
-                      <img src="./image_assets/mesh_comp_1.png" alt="Mesh Comparison 1" style="width:100%; height:auto; border:0; display:block;">
-                        <figcaption style="font-size:0.95rem; margin-top:0.5rem;"><em>"A moose walks straight ahead."</em></figcaption>
-                    </figure>
-                    <figure style="margin:0; width:40%; text-align:center;">
-                      <iframe class="vframe"
-                        src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_1_pup.viser&initialCameraPosition=1.500,0,0.000&initialCameraLookAt=0.000,0.000,0.000&initialCameraUp=-0.000,0.000,1.000"
-                        loading="lazy" style="width:100%; height:315px; border:0; display:block;"></iframe>
-                      <figcaption style="font-size:0.95rem; margin-top:0.5rem;">Puppeteer</figcaption>
-                    </figure>
-
-                    <figure style="margin:0; width:40%; text-align:center;">
-                      <iframe class="vframe"
-                        src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io//recordings/comp_mesh_1_ours.viser&initialCameraPosition=2.000,-2.385,0.000&initialCameraLookAt=-0.500,-0.5000,0.500&initialCameraUp=-0.000,0.000,1.000"
-                        loading="lazy" style="width:100%; height:315px; border:0; display:block;"></iframe>
-                      <figcaption style="font-size:0.95rem; margin-top:0.5rem;">Ours</figcaption>
-                    </figure>
-                  </div> 
-                </div>
-
-                <div class="item item-steve">
-                  <div style="display:flex; gap:0.75rem; flex-wrap:nowrap; justify-content:center; align-items:flex-start;">
-                    <figure style="margin-top:7%; margin-left:3%; width:20%; text-align:center;">
-                      <img src="./image_assets/mesh_comp_2.png" alt="Mesh Comparison 1" style="width:100%; height:auto; border:0; display:block;">
-                      <figcaption style="font-size:0.95rem; margin-top:0.5rem;"><em>"A horse trots forward."</em></figcaption>
-                    </figure>
-                    <figure style="margin:0; width:40%; text-align:center;">
-                      <iframe class="vframe"
-                        src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_2_pup.viser&initialCameraPosition=1.20,0,0.000&initialCameraLookAt=0.000,0.000,0.000&initialCameraUp=-0.000,0.000,1.000"
-                        loading="lazy" style="width:100%; height:315px; border:0; display:block;"></iframe>
-                      <figcaption style="font-size:0.95rem; margin-top:0.5rem;">Puppeteer</figcaption>
-                    </figure>
-
-                    <figure style="margin:0; width:40%; text-align:center;">
-                      <iframe class="vframe"
-                        src="https://kirin-ani.github.io/viser-client/?playbackPath=https://kirin-ani.github.io/recordings/comp_mesh_2_ours.viser&initialCameraPosition=0,2,1.500&initialCameraLookAt=0.5,0,0.5&initialCameraUp=-0.000,0.000,1.000"
-                        loading="lazy" style="width:100%; height:315px; border:0; display:block;"></iframe>
-                      <figcaption style="font-size:0.95rem; margin-top:0.5rem;">Ours</figcaption>
-                    </figure>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="hide-on-touchscreens" style="
-            display: flex;
-            justify-content: center;
-            gap: 1.5em;
-            padding-top: 0.5em;
-          ">
-                        <div>
-                            <img src="./image_assets/view-360-arrow.svg" alt="360° view" style="height:1em; width:auto; display:inline-block; vertical-align:middle; margin-right:0.35rem;">
-                            <strong>Left-click</strong> and
-                            drag to rotate
-                        </div>
-                        <div>
-                            <img src="./image_assets/arrows-move.svg" alt="360° view" style="height:1em; width:auto; display:inline-block; vertical-align:middle; margin-right:0.35rem;"><strong>Right-click</strong> and
-                            drag or
-                            <strong>WASD</strong>
-                            to move
-                        </div>
-                        <div><img src="./image_assets/zoom.svg" alt="Zoom" style="height:1em; width:auto; display:inline-block; vertical-align:middle; margin-right:0.35rem;"> <strong>Scroll</strong> to zoom</div>
-                        <div><strong>Click <img src="./image_assets/player-pause.svg" alt="Pause" style="height:1em; width:auto; display:inline-block; vertical-align:middle; margin-right:0.35rem;"></strong>to pause</div>
-                    </div>
-          <br><br>
-          <span class="title is-2 publication-title" style="font-size:1.2em;">Generated Skeletal Motion</span><br><br>
-          <span style="font-size:1.1em;"> Visual comparison of generated skeletal motion with the baseline.</span>
-          <br><br>
-          <div class="hero is-light is-small">
-            <div class="hero-body is-light">
-              <video poster="" autoplay controls muted loop style="width:100%; max-width:800px; height:auto;">
-                <source src="./video_assets/skeleton_comparison.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-          <br><br>
-      </div>
-    </div>
-    </div>
-  </section>
-
-
-  <script src="./assets/js/sample.js"></script>
-  <script src="./assets/js/juxtapose.js"></script>
-  <script src="./assets/js/popper.min.js"></script>
-  <script src="./assets/js/jquery.min.js"></script>
-  <script src="./assets/js/bootstrap.min.js"></script>
-  <script defer="" src="./assets/js/fontawesome.all.min.js"></script>
-  <script src="./assets/js/bulma-carousel.min.js"></script>
-  <script src="./assets/js/bulma-slider.min.js"></script>
-  <script src="./assets/js/magnifier.js"></script>
-  <script src="./assets/js/index.js"></script>
-
+  // ---------- Apply persisted tweaks on load ----------
+  (() => {
+    const t = window.TWEAK_DEFAULTS || {};
+    const html = document.documentElement;
+    if (t.palette) html.dataset.palette = t.palette;
+    if (t.accent)  html.dataset.accent  = t.accent;
+    if (t.fonts)   html.dataset.fonts   = t.fonts;
+    if (t.density) html.dataset.density = t.density;
+    if (t.heroLayout) html.dataset.hero = t.heroLayout;
+  })();
+</script>
 
 </body>
-
 </html>
-
