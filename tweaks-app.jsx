@@ -7,7 +7,6 @@ function applyTweaks(t) {
   html.dataset.accent  = t.accent;
   html.dataset.fonts   = t.fonts;
   html.dataset.density = t.density;
-  html.dataset.hero    = t.heroLayout;
 }
 
 function App() {
@@ -56,15 +55,6 @@ function App() {
       </TweakSection>
 
       <TweakSection title="Layout">
-        <TweakRadio
-          label="Hero"
-          value={tweaks.heroLayout}
-          options={[
-            { value: 'asymmetric', label: 'Asymmetric' },
-            { value: 'centered',   label: 'Centered' },
-          ]}
-          onChange={(v) => setTweak('heroLayout', v)}
-        />
         <TweakRadio
           label="Density"
           value={tweaks.density}

@@ -40,7 +40,7 @@
     --accent-ink:   oklch(0.30 0.07 145);
 
     /* Type scale */
-    --display: 'Fraunces', 'Times New Roman', serif;
+    --display: 'Fraunces', 'Times New Roman', Georgia, serif;
     --body:    'Inter Tight', system-ui, sans-serif;
     --mono:    'JetBrains Mono', ui-monospace, monospace;
 
@@ -91,7 +91,7 @@
     --body:    'Inter Tight', system-ui, sans-serif;
   }
   html[data-fonts="serifBoth"] {
-    --display: 'Fraunces', serif;
+    --display: 'Fraunces', Georgia, serif;
     --body:    'Fraunces', Georgia, serif;
   }
 
@@ -146,18 +146,114 @@
   @media (max-width: 720px) { .topnav { display: none; } }
 
   /* ---------- Hero ---------- */
-  .hero { padding: clamp(56px, 9vw, 120px) 0 clamp(48px, 7vw, 96px); position: relative; overflow: hidden; }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(32px, 4vw, 56px);
-    align-items: center;
+  .hero { position: relative; overflow: hidden; padding: clamp(48px, 7vw, 96px) 0 clamp(52px, 7vw, 100px); }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .hero-bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(26,23,18,0.26), rgba(26,23,18,0.20));
   }
-  .hero-grid > .hero-copy { max-width: 56ch; }
-  html[data-hero="centered"] .hero-grid { grid-template-columns: 1fr; text-align: center; }
-  html[data-hero="centered"] .hero-grid > .hero-copy { margin-inline: auto; }
-  html[data-hero="centered"] .hero-art { display: none; }
-  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } .hero-art { order: -1; } }
+  .hero > .wrap { position: relative; z-index: 2; }
+  /* Centered academic hero */
+  .hero { text-align: center; }
+  .hero-center {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+    padding: clamp(24px, 3.5vw, 44px) clamp(22px, 4vw, 56px);
+    background: rgba(26,23,18,0.56);
+    -webkit-backdrop-filter: blur(7px) saturate(112%);
+    backdrop-filter: blur(7px) saturate(112%);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 18px;
+    box-shadow: 0 16px 46px rgba(0,0,0,0.28);
+    color: #fff;
+  }
+  .hero-center .venue { color: rgba(255,255,255,0.92); border-color: rgba(255,255,255,0.32); background: rgba(255,255,255,0.12); }
+  .hero-center .paper-title { color: #fff; font-weight: 500; text-shadow: 0 1px 16px rgba(0,0,0,0.35); }
+  .hero-center .author-line, .hero-center .author-line a.author { color: #fff; }
+  .hero-center .author-line a.author { border-bottom-color: rgba(255,255,255,0.5); }
+  .hero-center .author-line a.author:hover { border-bottom-color: #fff; }
+  .hero-center .author-line sup, .hero-center .affil-line sup, .hero-center .equal-note sup { color: rgba(255,255,255,0.75); }
+  .hero-center .affil-line { color: rgba(255,255,255,0.88); }
+  .hero-center .equal-note { color: rgba(255,255,255,0.78); }
+  .hero .hero-center .lede { color: #fff; }
+  .hero-center .author-line, .hero-center .affil-line, .hero-center .equal-note, .hero-center .lede { text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
+  .hero-center .hero-cta .btn { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); color: #fff; }
+  .hero-center .hero-cta .btn:hover { background: rgba(255,255,255,0.22); border-color: #fff; }
+  .hero-center .hero-cta .btn.primary { background: #fff; color: #1a1712; border-color: #fff; }
+  .hero-center .hero-cta .btn.primary:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .hero-center .construction { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.24); color: rgba(255,255,255,0.88); }
+  .hero-center .construction .badge { background: var(--accent); color: #fff; }
+  .venue {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+    padding: 6px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--bg-card);
+  }
+  .paper-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(32px, 4.7vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 16px auto 24px;
+    max-width: 20ch;
+    text-wrap: balance;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144, "SOFT" 40;
+  }
+  .author-line {
+    font-size: clamp(16px, 1.6vw, 19px);
+    color: var(--ink);
+    margin: 0 0 5px;
+  }
+  .affil-line {
+    font-size: 15px;
+    color: var(--ink-mute);
+    margin: 0 0 10px;
+  }
+  .author-line sup, .affil-line sup { font-size: 0.62em; font-weight: 500; }
+  .author-line sup { color: var(--accent); }
+  .author-line a.author {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--accent), transparent 55%);
+    transition: color .15s, border-color .15s;
+  }
+  .author-line a.author:hover { color: var(--accent-ink); border-bottom-color: var(--accent); }
+  .equal-note {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+  }
+  .equal-note sup { color: var(--accent); }
+  .teaser { margin: clamp(40px, 5vw, 64px) auto 0; max-width: 1040px; }
+  .teaser--top { margin: 0 auto clamp(30px, 4vw, 48px); max-width: 1120px; }
+  .teaser-frame {
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: clamp(10px, 1.5vw, 18px);
+  }
+  .teaser-frame img { width: 100%; height: auto; display: block; mix-blend-mode: multiply; }
+  html[data-palette="dark"] .teaser-frame { background: oklch(0.95 0.005 80); }
+  html[data-palette="dark"] .teaser-frame img { mix-blend-mode: normal; }
+  .teaser figcaption {
+    margin: 16px auto 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-mute);
+    max-width: 82ch;
+    text-wrap: pretty;
+  }
+  .teaser figcaption b { color: var(--ink); font-weight: 600; }
 
   .eyebrow {
     display: inline-flex; align-items: center; gap: 10px;
@@ -173,32 +269,14 @@
   }
   .eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
 
-  .hero h1.title {
-    font-family: var(--display);
-    font-weight: 350;
-    font-style: normal;
-    font-size: clamp(40px, 5.2vw, 76px);
-    line-height: 1;
-    letter-spacing: -0.025em;
-    margin: 22px 0 18px;
-    font-variation-settings: "opsz" 144, "SOFT" 30;
-    text-wrap: balance;
-  }
-  .hero h1.title em {
-    font-style: italic;
-    font-weight: 350;
-    color: var(--accent);
-    font-variation-settings: "opsz" 144, "SOFT" 50;
-  }
   .hero .lede {
     font-family: var(--display);
     font-weight: 400;
-    font-size: clamp(20px, 2vw, 26px);
-    line-height: 1.3;
+    font-size: clamp(18px, 1.8vw, 22px);
+    line-height: 1.4;
     color: var(--ink-mute);
-    max-width: 36ch;
-    margin: 0 0 28px;
-    font-variation-settings: "opsz" 36;
+    max-width: 56ch;
+    margin: 0 auto 28px;
     text-wrap: pretty;
   }
 
@@ -215,7 +293,7 @@
   .authors .row { display: flex; gap: 10px; flex-wrap: wrap; }
   .authors .label { color: var(--ink-soft); min-width: 100px; }
 
-  .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 0 0 8px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: var(--body); font-size: 14px; font-weight: 500;
@@ -292,7 +370,9 @@
 
   /* Construction notice — restyled subtle */
   .construction {
-    margin-top: 28px;
+    margin: 28px auto 0;
+    max-width: 640px;
+    text-align: left;
     display: flex; align-items: center; gap: 14px;
     padding: 14px 18px;
     border: 1px dashed var(--rule);
@@ -315,8 +395,8 @@
   }
   .s-head {
     display: grid;
-    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-    gap: clamp(24px, 5vw, 64px);
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(16px, 2.5vw, 32px);
     margin-bottom: clamp(32px, 5vw, 56px);
     align-items: start;
   }
@@ -339,15 +419,15 @@
   }
   .s-title {
     font-family: var(--display);
-    font-weight: 350;
-    font-size: clamp(36px, 5vw, 64px);
-    line-height: 1.02;
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    font-size: clamp(32px, 4.4vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.018em;
     margin: 0;
-    font-variation-settings: "opsz" 96, "SOFT" 40;
     text-wrap: balance;
+    font-variation-settings: "opsz" 96, "SOFT" 40;
   }
-  .s-title em { font-style: italic; font-weight: 350; color: inherit; }
+  .s-title em { font-style: normal; font-weight: 400; color: inherit; }
   .s-title { padding-bottom: 6px; }
   .s-sub {
     font-size: 17px;
@@ -376,16 +456,6 @@
     text-wrap: pretty;
     font-variation-settings: "opsz" 36;
     color: var(--ink);
-  }
-  .abstract-body p:first-child::first-letter {
-    font-family: var(--display);
-    font-size: 4.6em;
-    float: left;
-    line-height: 0.85;
-    padding: 6px 14px 0 0;
-    font-weight: 400;
-    color: var(--accent);
-    font-variation-settings: "opsz" 144;
   }
   .abstract-body p + p {
     font-family: var(--body);
@@ -447,7 +517,7 @@
   .compare-head .id { color: var(--accent); }
   .compare-head .prompt {
     font-family: var(--display);
-    font-style: italic;
+    font-style: normal;
     text-transform: none;
     font-size: 17px;
     letter-spacing: 0;
@@ -757,53 +827,42 @@
 
 <!-- ===== Hero ===== -->
 <section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <img src="figures/teaser.jpg" alt="">
+  </div>
   <div class="wrap">
-    <div class="hero-grid">
-      <div class="hero-copy" data-reveal>
-        <span class="eyebrow"><span class="dot"></span> Animal Motion Generation</span>
-        <h1 class="title">Animal motion, <em>from the wild</em>.</h1>
-        <p class="lede">Kirin learns 3D quadruped motion directly from internet video — and turns a single image plus a text prompt into a fully rigged, animated mesh.</p>
+    <div class="hero-center" data-reveal>
+      <span class="venue">ECCV 2026</span>
+      <h1 class="paper-title">Kirin: Animal Motion Generation from In-the-Wild Video</h1>
+      <div class="author-line"><a class="author" href="https://briannlongzhao.github.io/" target="_blank" rel="noopener">Brian Nlong Zhao</a><sup>1</sup><sup>*</sup>, <a class="author" href="https://panzhy.com/" target="_blank" rel="noopener">Zhuoyang Pan</a><sup>2</sup><sup>*</sup>, <a class="author" href="https://rehg.org/" target="_blank" rel="noopener">James M. Rehg</a><sup>1</sup>, <a class="author" href="https://jiajunwu.com/" target="_blank" rel="noopener">Jiajun Wu</a><sup>3</sup>, and <a class="author" href="https://elliottwu.com/" target="_blank" rel="noopener">Shangzhe Wu</a><sup>4</sup></div>
+      <div class="affil-line"><sup>1</sup>&#8202;University of Illinois Urbana-Champaign &nbsp;·&nbsp; <sup>2</sup>&#8202;University of Pennsylvania &nbsp;·&nbsp; <sup>3</sup>&#8202;Stanford University &nbsp;·&nbsp; <sup>4</sup>&#8202;University of Cambridge</div>
+      <div class="equal-note"><sup>*</sup> Equal contribution</div>
+      <p class="lede">Kirin learns 3D quadruped motion directly from internet video, and turns a single image plus a text prompt into a fully rigged, animated mesh.</p>
 
-        <div class="hero-cta">
-          <a class="btn primary" href="#" aria-disabled="true">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-            Paper
-          </a>
-          <a class="btn" href="#" aria-disabled="true">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-            Code
-          </a>
-          <a class="btn" href="#" aria-disabled="true">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
-            Dataset
-          </a>
-          <a class="btn" href="#data">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-            Watch
-          </a>
-        </div>
-
-        <dl class="authors">
-          <div class="row"><span class="label">Authors</span><span>Anonymous Authors</span></div>
-          <div class="row"><span class="label">Status</span><span>Under review</span></div>
-        </dl>
-
-        <div class="construction">
-          <span class="badge">In progress</span>
-          <span>Page is being prepared for public release. Expect more results, code, and dataset links shortly.</span>
-        </div>
+      <div class="hero-cta">
+        <a class="btn primary" href="#" aria-disabled="true">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Paper
+        </a>
+        <a class="btn" href="#" aria-disabled="true">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          Code
+        </a>
+        <a class="btn" href="#" aria-disabled="true">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+          Dataset
+        </a>
+        <a class="btn" href="#data">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          Watch
+        </a>
       </div>
 
-      <div class="hero-art hero-art--teaser" data-reveal>
-        <img class="mascot" src="figures/teaser.png" alt="Kirin teaser — generated 3D animal mesh sequences">
-        <div class="caption">
-          <span>Fig. 01 · Kirin generations</span>
-          <span class="ticks"><span></span><span></span><span></span><span></span></span>
-        </div>
+      <div class="construction">
+        <span class="badge">In progress</span>
+        <span>Page is being prepared for public release. Expect more results, code, and dataset links shortly.</span>
       </div>
     </div>
-
-    <p class="hero-cap" data-reveal>Given an animal image and a text description of the desired motion, Kirin produces a 3D animated mesh sequence — trained on motion reconstructed from in-the-wild video, with an automatic rigging step at the end.</p>
   </div>
 </section>
 
@@ -811,9 +870,9 @@
 <section class="s" id="abstract">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">01</span> Abstract</div>
+      <div class="s-num"><span class="n">01</span></div>
       <div>
-        <h2 class="s-title">Reconstruct, learn, <em>generate</em>.</h2>
+        <h2 class="s-title">Abstract</h2>
         <p class="s-sub">A unified framework that reconstructs 3D motion from in-the-wild video, learns priors at scale on the resulting dataset, and generates realistic motion conditioned on text and image.</p>
       </div>
     </div>
@@ -855,15 +914,15 @@
 <section class="s" id="method">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">02</span> Method</div>
+      <div class="s-num"><span class="n">02</span></div>
       <div>
-        <h2 class="s-title">Text + image, <em>conditioned generation</em>.</h2>
+        <h2 class="s-title">Method</h2>
         <p class="s-sub">A two-stage pipeline. A diffusion-based motion model conditioned on text and image generates the 3D motion; an automatic rigging module applies it to a T-posed mesh produced from the same image.</p>
       </div>
     </div>
 
     <div class="fig">
-      <div class="fig-img"><img src="figures/method.png" alt="Kirin method overview"></div>
+      <div class="fig-img"><img src="figures/method.jpg" alt="Kirin method overview"></div>
       <div class="fig-cap">
         <span class="id">Fig. 02 · Pipeline</span>
         <div class="body">
@@ -876,7 +935,7 @@
 
     <h3 class="s-subhead">Reconstruction backbone</h3>
     <div class="fig">
-      <div class="fig-img"><img src="figures/reconstruction_method.png" alt="Reconstruction method"></div>
+      <div class="fig-img"><img src="figures/reconstruction_method.jpg" alt="Reconstruction method"></div>
       <div class="fig-cap">
         <span class="id">Fig. 03 · Reconstruction</span>
         <div class="body">
@@ -891,15 +950,15 @@
 <section class="s" id="data">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">03</span> Data</div>
+      <div class="s-num"><span class="n">03</span></div>
       <div>
-        <h2 class="s-title">AiM3D — <em>scraped from reality</em>.</h2>
+        <h2 class="s-title">Dataset</h2>
         <p class="s-sub">A large-scale animal motion dataset with aligned video, text, and 3D motion. Reconstructions cover diverse species, behaviours, and environments far beyond what controlled capture can offer.</p>
       </div>
     </div>
 
     <div class="fig">
-      <div class="fig-img"><img src="figures/data_examples.png" alt="AiM3D data examples — captions, video frames and reconstructed motion"></div>
+      <div class="fig-img"><img src="figures/data_examples.jpg" alt="AiM3D data examples — captions, video frames and reconstructed motion"></div>
       <div class="fig-cap">
         <span class="id">Fig. 04 · AiM3D samples</span>
         <div class="body">
@@ -950,9 +1009,9 @@
 <section class="s" id="comparisons">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">04</span> Comparisons</div>
+      <div class="s-num"><span class="n">04</span></div>
       <div>
-        <h2 class="s-title">Beating the baselines, <em>in motion</em>.</h2>
+        <h2 class="s-title">Comparisons</h2>
         <p class="s-sub">Side-by-side qualitative comparisons of generated mesh and skeletal animation against the strongest published baseline. Drag to inspect; click pause to hold a frame.</p>
       </div>
     </div>
@@ -1040,7 +1099,7 @@
 
     <h3 class="s-subhead">Generated skeletal motion</h3>
     <div class="fig">
-      <div class="fig-img"><img src="figures/skeleton_comp.png" alt="Skeletal motion comparison vs baseline"></div>
+      <div class="fig-img"><img src="figures/skeleton_comp.jpg" alt="Skeletal motion comparison vs baseline"></div>
       <div class="fig-cap">
         <span class="id">Fig. 05 · Skeleton</span>
         <div class="body">
@@ -1051,7 +1110,7 @@
 
     <h3 class="s-subhead">Animated mesh — gallery comparison</h3>
     <div class="fig">
-      <div class="fig-img"><img src="figures/puppeteer_comparison.png" alt="Mesh animation comparison against Puppeteer baseline"></div>
+      <div class="fig-img"><img src="figures/puppeteer_comparison.jpg" alt="Mesh animation comparison against Puppeteer baseline"></div>
       <div class="fig-cap">
         <span class="id">Fig. 06 · Mesh gallery</span>
         <div class="body">
@@ -1066,9 +1125,9 @@
 <section class="s" id="results">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">05</span> Results</div>
+      <div class="s-num"><span class="n">05</span></div>
       <div>
-        <h2 class="s-title">Quantitative <em>evaluation</em>.</h2>
+        <h2 class="s-title">Results</h2>
         <p class="s-sub">Across motion-generation metrics and 4D animation benchmarks, Kirin outperforms or matches prior methods. Best results in <span style="color: var(--accent-ink); font-weight: 700;">color</span>; second-best <span style="text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px;">underlined</span>.</p>
       </div>
     </div>
@@ -1177,9 +1236,9 @@
 <section class="s" id="cite">
   <div class="wrap" data-reveal>
     <div class="s-head">
-      <div class="s-num"><span class="n">06</span> Cite</div>
+      <div class="s-num"><span class="n">06</span></div>
       <div>
-        <h2 class="s-title">If Kirin helps your work, <em>please cite</em>.</h2>
+        <h2 class="s-title">Citation</h2>
         <p class="s-sub">Bibliographic information will be finalised on release. A placeholder entry is shown below.</p>
       </div>
     </div>
