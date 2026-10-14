@@ -493,13 +493,19 @@
   }
 
   /* Abstract */
-  .abstract-body { max-width: 68ch; }
+  .abstract-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(28px, 5vw, 64px);
+    align-items: start;
+  }
+  @media (max-width: 760px) { .abstract-body { grid-template-columns: 1fr; gap: 22px; } }
   .abstract-body p {
     font-family: var(--display);
     font-weight: 400;
     font-size: clamp(20px, 1.8vw, 24px);
     line-height: 1.45;
-    margin: 0 0 18px;
+    margin: 0;
     text-wrap: pretty;
     font-variation-settings: "opsz" 36;
     color: var(--ink);
@@ -508,7 +514,7 @@
     font-family: var(--body);
     font-size: 16px;
     color: var(--ink-mute);
-    line-height: 1.6;
+    line-height: 1.65;
   }
 
   /* Media block */
@@ -924,7 +930,6 @@
       <div class="s-num"><span class="n">01</span></div>
       <div>
         <h2 class="s-title">Abstract</h2>
-        <p class="s-sub">A unified framework that reconstructs 3D motion from in-the-wild video, learns priors at scale on the resulting dataset, and generates realistic motion conditioned on text and image.</p>
       </div>
     </div>
 
