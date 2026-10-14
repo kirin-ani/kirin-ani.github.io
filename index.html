@@ -493,15 +493,7 @@
   }
 
   /* Abstract */
-  .abstract-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-    gap: clamp(24px, 5vw, 64px);
-  }
-  @media (max-width: 760px) { .abstract-grid { grid-template-columns: 1fr; } }
-  .meta-list { display: grid; gap: 18px; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
-  .meta-list dt { color: var(--ink-mute); margin-bottom: 4px; font-size: 10.5px; letter-spacing: 0.14em; }
-  .meta-list dd { margin: 0; color: var(--ink); font-family: var(--body); font-size: 14px; text-transform: none; letter-spacing: 0; }
+  .abstract-body { max-width: 68ch; }
   .abstract-body p {
     font-family: var(--display);
     font-weight: 400;
@@ -936,20 +928,9 @@
       </div>
     </div>
 
-    <div class="abstract-grid">
-      <dl class="meta-list">
-        <div><dt>Subject</dt><dd>Quadruped animals</dd></div>
-        <div><dt>Input</dt><dd>Single image + text prompt</dd></div>
-        <div><dt>Output</dt><dd>Rigged 3D animated mesh</dd></div>
-        <div><dt>Dataset</dt><dd>AiM3D — text · video · motion</dd></div>
-        <div><dt>Backbone</dt><dd>SMAL · MDM-adapted</dd></div>
-        <div><dt>Status</dt><dd>Under review</dd></div>
-      </dl>
-
-      <div class="abstract-body">
-        <p>Understanding animal motion is fundamental to modeling behavior and biomechanics, yet progress has lagged far behind human motion research because high-quality data is scarce. Capturing motion in controlled environments is impractical for most species, leaving existing datasets small and domain-limited.</p>
-        <p>Kirin sidesteps capture entirely. We reconstruct 3D motion sequences from large collections of in-the-wild animal video, pair them with VLM-generated captions, and release <strong>AiM3D</strong> — the first large-scale dataset offering aligned video–text–motion tuples for quadrupeds. On top of it we train a visual-guided generation model that conditions on both text and image, then leverage an off-the-shelf image-to-3D model to automatically rig and animate the result, producing ready-to-render animated animals from a single picture.</p>
-      </div>
+    <div class="abstract-body">
+      <p>Understanding animal motion is fundamental to modeling animal behavior and biomechanics, yet progress in this area lags far behind human motion research due to the scarcity of high-quality motion data. While human motion can be captured in controlled environments, it is impractical for most animal species, resulting in small, domain-limited datasets that restrict downstream applications such as animation.</p>
+      <p>To address this challenge, we introduce <strong>Kirin</strong>, a framework that reconstructs motion from video, learns motion priors at scale, and generates realistic motion that can be directly applied to animated assets. Using large collections of in-the-wild animal videos, we reconstruct 3D motion sequences and pair them with captions to create <strong>AiM3D</strong>, the first large-scale dataset offering aligned video-text-motion tuples for quadruped animals. Building on this dataset, we develop a visual-guided motion generation model that conditions on both text and image to guide the generation of realistic motion across diverse animal species. Finally, by leveraging an off-the-shelf image-to-3D model, we automatically rig and animate 3D meshes using generated motion, producing ready-to-render animated animals. Together, our dataset and framework establish a new foundation for large-scale, text and image conditioned animal motion generation and animation.</p>
     </div>
 
     <div style="margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
